@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Login</title>
+<link rel="stylesheet" href="css/login-register.css">
+</head>
+<body>
+<div class="container">
+    <h2>Iniciar Sesión</h2>
+    <input type="email" id="email" placeholder="Correo electrónico">
+    <input type="password" id="password" placeholder="Contraseña">
+    <button onclick="login()">Entrar</button>
+</div>
+
+<script>
+function login() {
+    const data = {
+        email: document.getElementById("email").value,
+        password: document.getElementById("password").value
+    };
+
+    fetch("/api/auth/login", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify(data)
+    })
+    .then(res => res.text())
+    .then(msg => {
+        if(msg === "ok") window.location.href = "index2.html";
+        else alert(msg);
+    });
+}
+</script>
+</body>
+</html>
