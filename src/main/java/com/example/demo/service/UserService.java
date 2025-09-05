@@ -5,8 +5,6 @@ import com.example.demo.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-
 @Service
 public class UserService {
 
@@ -14,15 +12,23 @@ public class UserService {
     private UserRepository userRepository;
 
     public String register(User user) {
-        if(userRepository.findByEmail(user.getEmail()).isPresent()) {
+        // Verificar si el usuario ya existe
+        if (userRepository.findByEmail(user.getEmail()) != null) {
             return "El usuario ya existe";
         }
+        
+        // Guardar el nuevo usuario
         userRepository.save(user);
-        return "Usuario registrado con éxito";
+        return "Usuario registrado exitosamente";
     }
 
-    public boolean login(String email, String password) {
-        Optional<User> user = userRepository.findByEmail(email);
-        return user.isPresent() && user.get().getPassword().equals(password);
+    public User login(String email, String password) {
+        User user = userRepository.findByEmail(email);
+        
+        if (user != null && user.getPassword().equals(password)) {
+            return user; // Devuelve el objeto usuario completo
+        }
+        
+        return null; // Credenciales incorrectas
     }
 }

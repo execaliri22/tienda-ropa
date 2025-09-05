@@ -25,10 +25,26 @@ function login() {
         headers: {"Content-Type": "application/json"},
         body: JSON.stringify(data)
     })
-    .then(res => res.text())
-    .then(msg => {
-        if(msg === "ok") window.location.href = "index2.html";
-        else alert(msg);
+    .then(res => {
+        if (res.status === 401) {
+            return res.json().then(data => { throw new Error(data.message); });
+        }
+        return res.json();
+    })
+    .then(data => {
+        if(data.status === "success") {
+            // Guardar información del usuario en localStorage
+            localStorage.setItem('user', JSON.stringify({
+                name: data.name,
+                email: data.email
+            }));
+            window.location.href = "index2.html";
+        } else {
+            alert("Error: " + data.message);
+        }
+    })
+    .catch(error => {
+        alert("Error: " + error.message);
     });
 }
 </script>
