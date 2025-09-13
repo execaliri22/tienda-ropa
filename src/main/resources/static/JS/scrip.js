@@ -7,7 +7,6 @@ let articulosCarrito = [];
 
 // Cargar eventos
 document.addEventListener("DOMContentLoaded", () => {
-    // Recuperar carrito del localStorage al iniciar
     articulosCarrito = JSON.parse(localStorage.getItem("carrito")) || [];
     renderCarrito();
 });
@@ -20,7 +19,7 @@ vaciarCarritoBtn.addEventListener("click", vaciarCarrito);
 function agregarProducto(e) {
     e.preventDefault();
     if (e.target.classList.contains("agregar-carrito")) {
-        const producto = e.target.parentElement.parentElement;
+        const producto = e.target.closest(".product");
         leerDatosProducto(producto);
     }
 }
@@ -31,11 +30,14 @@ function leerDatosProducto(producto) {
         titulo: producto.querySelector("h3").textContent,
         precio: producto.querySelector(".precio").textContent,
         id: producto.querySelector("a").getAttribute("data-id"),
+        cantidad: 1
     };
 
-    // Evitar duplicados, solo uno por producto
-    const existe = articulosCarrito.some(item => item.id === infoProducto.id);
-    if (!existe) {
+    const existe = articulosCarrito.find(item => item.id === infoProducto.id);
+
+    if (existe) {
+        existe.cantidad++;
+    } else {
         articulosCarrito.push(infoProducto);
     }
 
@@ -52,6 +54,7 @@ function renderCarrito() {
             <td><img src="${producto.imagen}" width="50"></td>
             <td>${producto.titulo}</td>
             <td>${producto.precio}</td>
+            <td>${producto.cantidad}</td>
             <td><a href="#" class="borrar-producto" data-id="${producto.id}">X</a></td>
         `;
         carrito.appendChild(row);
@@ -59,6 +62,7 @@ function renderCarrito() {
 
     // Guardar en localStorage
     localStorage.setItem("carrito", JSON.stringify(articulosCarrito));
+    console.log("Carrito actualizado:", articulosCarrito);
 }
 
 // Eliminar un producto
@@ -75,6 +79,7 @@ function vaciarCarrito(e) {
     e.preventDefault();
     articulosCarrito = [];
     renderCarrito();
+    localStorage.removeItem("carrito");
 }
 
 // Limpiar HTML carrito
